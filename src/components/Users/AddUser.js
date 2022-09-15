@@ -1,47 +1,46 @@
-import React,{ useState} from 'react'
+import React,{ useState, useRef} from 'react'
 import Card from '../UI/Card'
 import classes from './AddUser.module.css'
 import Button from '../UI/Button'
 import ErrorModal from '../UI/ErrorModal'
-import Wrapper from '../Helpers/Wrapper'
+// import Wrapper from '../Helpers/Wrapper'
 const AddUser = (props) => {
-    const [username,setUserName] = useState('');
-    const [age,setAge] = useState('');
+     const userInput = useRef();
+     const ageInput = useRef();
+     const clgInput = useRef();
+    
     const [error,setError] = useState('');
-    const changeHandler = (e) => {
-      const {name,value } = e.target;
-      if(name === 'userName'){
-        setUserName(value);
-      }
-      else
-        setAge(value);
-        
-    }
+   
 
     const saveHandler = (e) => {
         e.preventDefault();
+        userInput.current.focus();
+        const enteredName = userInput.current.value;
+        const enteredAge = ageInput.current.value;
+        const enteredClg = clgInput.current.value;
         console.log("form submitted")
-        // let userDetails = {};
-        // userDetails['Name'] = username;
-        // userDetails['Age'] = age;
-        if(username.trim().length === 0 || age.trim().length === 0){
+        
+        if(enteredName.trim().length === 0 || enteredAge.trim().length === 0 || enteredClg.trim().length === 0){
           setError({
             title: 'Missing User Details',
-            message: 'Please enter valid username and age'
+            message: 'Please enter valid details to proceed'
           })
           return;
         }
-        if(+age < 1){
+        if(+enteredAge < 1){
           setError({
             title: 'Invalid Age',
             message: 'Please enter valid age (>0) '
           })
           return;
         }
-        console.log(username,age)
-        props.onAddUser(username,age);
-        setUserName('');
-        setAge('');
+        
+        props.onAddUser(enteredName,enteredAge,enteredClg);
+        userInput.current.value = '';
+        ageInput.current.value = '';
+        clgInput.current.value= '';
+
+        
     }
 
     const errorHandler = () => {
@@ -53,9 +52,11 @@ const AddUser = (props) => {
     <Card className={classes.input}>
         <form onSubmit={saveHandler}>
             <label htmlFor="name">Name</label> 
-            <input type="text" placeholder="Name" id = "name" name='userName' onChange={changeHandler} value={username} />
+            <input type="text" placeholder="Name" id = "name" name='userName' ref={userInput} />
             <label htmlFor="age">Age</label>
-            <input type="number" placeholder="Age" id = "age" name='userAge' onChange={changeHandler} value={age} />
+            <input type="number" placeholder="Age" id = "age" name='userAge' ref={ageInput}/>
+            <label htmlFor="clgname">College Name</label> 
+            <input type="text" placeholder="College Name" id = "clgname" ref={clgInput} />
 
             <Button type="submit" id='btn'> Add User Details </Button>
         </form>
